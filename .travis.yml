@@ -7,7 +7,7 @@ rvm:
 before_install:
   - sudo apt-get install -qq libaugeas-dev
 
-script: 'rake'
+script: 'rake spec'
 
 env:
   - PUPPET_VERSION="2.7"
