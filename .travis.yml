@@ -5,9 +5,13 @@ rvm:
   - "1.9.3"
 
 before_install:
+  - echo "BEFORE INSTALL START"
   - sudo apt-get install -qq libaugeas-dev
+  - gem install bundler
+  - echo "BEFORE INSTALL END"
 
-script: 'rake spec'
+script:
+  - bundle exec rake spec
 
 env:
   - PUPPET_VERSION="2.7"
