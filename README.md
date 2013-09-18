@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/vStone/puppet-module-testing.png?branch=develop)](https://travis-ci.org/vStone/puppet-module-testing)
+[![Build Status](https://travis-ci.org/mthibaut/puppet-module-testing.png?branch=rspec)](https://travis-ci.org/mthibaut/puppet-module-testing)
 
 # Puppet Module Testing
 
