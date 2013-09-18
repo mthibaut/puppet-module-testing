@@ -126,7 +126,7 @@
           <section>
           <h2>GIT tips n tricks</h2>
           <ul>
-            <li>Creating an empty branch:
+            <li>Creating an empty branch (git >= 1.7.2):
               <pre><code>$ git checkout --orphan NEWBRANCH</code></pre>
             </li>
             <li>Checking out a specific file from a branch/tag
@@ -215,35 +215,310 @@ $ git submodule update
           </section>
 
           <section>
-          <h1>The autofs module</h1>
+          <h1>rspec</h1>
+          </section>
+
+          <section>
+          <h2>Introduction</h2>
+          <h3>of myself</h3>
+          <div data-markdown>
+          <script type="text/template">
+            * maarten@cisco.com
+            * ... Github: [http://github.com/mthibaut/](https://github.com/mthibaut/),
+          </script>
+          </div>
+          </section>
+
+          <section>
+          <h2>Introduction</h2>
+          <h3>of the agenda:</h3>
+          <div data-markdown>
+          <script type="text/template">
+            * prep
+            * code
+            * test
+            * reference material
+          </script>
+          </div>
+          </section>
+          
+          <section>
+          <h2>Getting started</h2>
+          <pre><code class="shell">$ gem install bundler
+$ git clone git://github.com/mthibaut/puppet-module-testing
+$ cd puppet-module-testing
+</pre></code>
+          </section>
+
+          <section>
           <h2>Basic structure</h2>
           Some puppet code:
-          <pre><code class="shell">$ git checkout autofs_ppcs_start -- manifests/{init,config,params,service,package}.pp</pre></code>
-          <div class="gitref">[autofs] git checkout autofs_ppcs_start</div>
+          <pre><code class="shell">$ git checkout rspec_ppcs_start
+$ ls manifests/
+config.pp  init.pp  package.pp  params.pp  service.pp
+</pre></code>
+          <div class="gitref">[rspec] git checkout rspec_ppcs_start</div>
+          </section>
+
+
+          <section>
+          <h2>rspec test framework</h2>
+          <ul>
+            <li>Gemfile
+            <li>Gemfile.lock
+            <li>Rakefile
+            <li>spec/spec_helper.rb
+            <li>.fixtures
+          </ul>
           </section>
 
           <section>
           <h3>Gemfile</h3>
-          <pre><code class="ruby">source 'https://rubygems.org'
-puppetversion = ENV.key?('PUPPET_VERSION') ? "~> #{ENV['PUPPET_VERSION']}" : ['~> 3']
-gem 'puppet', puppetversion
-gem 'rake'
-gem 'puppet-lint'
+          <h4>Describes ruby dependencies (not puppet modules!)</h4>
+          <pre><code>source :rubygems
+
+group :development, :test do
+  gem 'puppetlabs_spec_helper', :require => false
+  gem 'rspec'
+  gem 'rspec-puppet'
+end
+
+if puppetversion = ENV['PUPPET_GEM_VERSION']
+  gem 'puppet', puppetversion, :require => false
+else
+  gem 'puppet', :require => false
+end
           </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_gemfile</div>
           </section>
+
+          <section>
+          <h3>Gemfile.lock</h3>
+          <h4>Locks your code to a specific list of dependencies</h4>
+          <pre><code class="shell">$ bundle
+Fetching gem metadata from http://rubygems.org/..
+Resolving dependencies...
+Using rake (10.1.0) 
+...
+$ grep rake Gemfile.lock
+    rake (10.1.0) </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_gemfile_lock</div>
+          </section>
+
           <section>
           <h3>Rakefile</h3>
-          <pre><code class="ruby">require 'rake'
-require 'puppet-lint/tasks/puppet-lint'
+          <h4>Configures available rake tasks</h4>
+          <pre><code class="ruby">
+require 'puppetlabs_spec_helper/rake_tasks'
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_rakefile</div>
+          </section>
 
-PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "vendor/**/*.pp"]
-PuppetLint.configuration.log_format = '%{path}:%{linenumber}:%{KIND}: %{message}'
+          <section>
+          <h3>Spec helper</h3>
+          <h4>Common ruby code shared by all spec tests</h4>
+          <pre><code class="ruby">
+require 'puppetlabs_spec_helper/module_spec_helper'
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_spec_helper</div>
+          </section>
+
+          <section>
+          <h3>Fixtures</h3>
+          <h4>Dependencies for running spec tests (e.g. puppet modules)</h4>
+          <pre><code>fixtures:
+# repositories:
+#   "stdlib": "git://github.com/puppetlabs/puppetlabs-stdlib.git"
+  symlinks:
+    "autofs": "#{source_dir}"
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_fixtures</div>
+          </section>
+
+          <section>
+          <h3>Ready for our first try!</h3>
+          <pre><code class="shell">$ rake spec
+/usr/bin/ruby -S rspec --color
+No examples found.
+
+
+Finished in 0.00007 seconds
+0 examples, 0 failures
           </code></pre>
           </section>
+
+
+          <section>
+          <h2>Write some tests</h2>
+          <ul>
+            <li>rspec-puppet does parsing only
+            <li>Provide the facts you need (e.g. $::osfamily)
+            <li>Filename must match spec/*/*_spec.rb
+            <li>Follow naming conventions
+               <ul>
+                 <li>class autofs => spec/classes/autofs_spec.rb
+                 <li>define ntp => spec/defines/ntp_spec.rb
+                 <li>function hash_to_list() => spec/functions/hash_to_list_spec.rb
+               </ul>
+            <li>Create a new file or add to existing one for each new bug
+          </ul>
+          </section>
+
+
+          <section>
+          <h3>First stab</h3>
+          <ul>
+            <li>Look at the manifests/init.pp file
+            <li>Write a test
+            <li>Run test
+          </ul>
+          <div class="gitref">[rspec] git checkout rspec_autofs_spec</div>
+          </section>
+
+          <section>
+          <h3>First stab</h3>
+          <h4>Look at the manifests/init.pp file</h4>
+          <pre><code class="shell">class autofs (
+  $owner   = $::autofs::params::owner,
+  $group   = $::autofs::params::group,
+  $mode    = $::autofs::params::mode,
+  $master  = $::autofs::params::master,
+  $package = $::autofs::params::package,
+  $service = $::autofs::params::service
+  #$mounts is NOT used here! They are used in autofs::loader with hiera_hash
+) inherits autofs::params {
+
+  include autofs::package
+  include autofs::config
+  include autofs::service
+
+}
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_autofs_spec</div>
+          </section>
+
+          <section>
+          <h3>First stab</h3>
+          <h4>Write a test</h4>
+          spec/classes/autofs_spec.rb
+          <pre><code class="ruby">require 'spec_helper'
+
+describe "autofs" do
+
+  it { should include_class('autofs::package') }
+  it { should include_class('autofs::config') }
+  it { should include_class('autofs::service') }
+
+end
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_autofs_spec</div>
+          </section>
+
+          <section>
+          <h3>First stab</h3>
+          <h4>Run test</h4>
+          <pre><code class="shell">$ rake spec
+/usr/bin/ruby -S rspec spec/classes/autofs_spec.rb --color
+FFF
+
+Failures:
+
+  1) autofs 
+     Failure/Error: it { should include_class('autofs::package') }
+     Puppet::Error:
+       osfamily not supported:  at /root/moduledev/puppet-module-testing-clean/spec/fixtures/modules/autofs/manifests/params.pp:17 on node rtp-il-puppet-test-client.cisco.com
+     # ./spec/classes/autofs_spec.rb:5
+
+...
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_autofs_spec</div>
+          </section>
+
+          <section>
+          <h3>First stab</h3>
+          <h4>What went wrong?</h4>
+          manifests/params.pp
+          <pre><code class="shell">case $::osfamily {
+    'RedHat': {
+      $master     = '/etc/auto.master'
+      $owner      = 'root'
+      $group      = 'root'
+      $mode       = '0644'
+      $package    = [ 'autofs' ]
+      $service    = 'autofs'
+    }
+    default: {
+      fail("osfamily not supported: ${::osfamily}")
+    }
+          </code></pre>
+          We didn't provide the facts!
+          </section>
+
+
+          <section>
+          <h3>Second stab</h3>
+          spec/classes/autofs_spec.rb
+          <pre><code class="shell">describe "autofs" do
+
+  let(:facts) {{ :osfamily => 'RedHat' }}
+
+  it { should include_class('autofs::package') }
+  it { should include_class('autofs::config') }
+  it { should include_class('autofs::service') }
+
+end
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_autofs_spec_fix</div>
+          </section>
+
+          <section>
+          <h3>Second stab</h3>
+          <h3></h3>
+          <pre><code class="shell">$ rake spec
+/usr/bin/ruby -S rspec spec/classes/autofs_spec.rb --color
+...
+
+Finished in 1.13 seconds
+3 examples, 0 failures
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_autofs_spec_fix</div>
+          </section>
+
+          <section>
+          <h3>Third stab</h3>
+          <pre><code class="shell">    it do
+      should contain_package('autofs')
+      should contain_service('autofs') \
+             .with_ensure('running')   \
+             .with_alias('autofs')
+    end
+
+  describe "on osfamily Debian" do
+    let(:facts) {{ :osfamily => 'Debian' }}
+
+    it do
+      expect {
+        should include_class('autofs::package')
+      }.to raise_error(Puppet::Error, /osfamily not supported:/)
+    end
+  end
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_autofs_more</div>
+          </section>
+
+          <section>
+          <h2>Reference material</h2>
+          <div data-markdown>
+          <script type="text/template">
+            * rspec-puppet [http://github.com/rodjek/rspec-puppet](http://github.com/rodjek/rspec-puppet),
+            * Tutorial [http://rspec-puppet.com/tutorial](http://rspec-puppet.com/tutorial)
+          </script>
+          </div>
+          </section>
+
 
           <section>
           SORRY, OUT OF TIME :D
-          <div class="gitref">[autofs] git checkout autofs_rake_lint</div>
           </section>
 
       </div><!-- end slides -->
