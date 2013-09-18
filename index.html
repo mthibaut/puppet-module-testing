@@ -551,6 +551,70 @@ Debug: Automatically imported autofs::params from autofs/params into production
           <div class="gitref">[rspec] git checkout rspec_debugging</div>
           </section>
 
+          <section>
+          <h2>Travis</h2>
+          <div data-markdown>
+          <script type="text/template">
+            * prep
+            * code
+            * test
+            * reference material
+          </script>
+          </div>
+          </section>
+          
+          <section>
+          <h3>Preparation</h3>
+          <div data-markdown>
+          <script type="text/template">
+            * Create Github account: [http://github.com](http://github.com)
+            * Create Travis account: [http://travis-ci.org](http://travis-ci.org)
+            * Create (or fork) a github repository
+            * Mark the repository for building on Travis
+          </script>
+          </div>
+          </section>
+
+          <section>
+          <h3>Code</h3>
+          .travis.yml
+          <pre><code>language: ruby
+rvm:
+  - 1.8.7
+  - 1.9.3
+
+script: 'rake spec'
+
+env:
+  - PUPPET_VERSION="2.7"
+  - PUPPET_VERSION="3.0"
+
+branches:
+  only:
+    - rspec
+          </code></pre>
+          </section>
+
+          <section>
+          <h3>Test</h3>
+          <div data-markdown>
+          <script type="text/template">
+            * git push
+            * Go to [http://travis-ci.org/](http://travis-ci.org)
+            * Have coffee
+          </script>
+          </div>
+          </section>
+
+          <section>
+          <h3>Remember</h3>
+          <div data-markdown>
+          <script type="text/template">
+            * You need to push something for it to work
+            * Test with many ruby and puppet versions
+          </script>
+          </div>
+          </section>
 
           <section>
           SORRY, OUT OF TIME :D
