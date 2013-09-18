@@ -517,6 +517,40 @@ Finished in 1.13 seconds
           </div>
           </section>
 
+          <section>
+          <h3>Debugging</h3>
+          spec/spec_helper.rb
+          <pre><code class="shell">require 'puppetlabs_spec_helper/module_spec_helper'
+
+RSpec.configure do |c|
+  c.mock_framework = :rspec
+
+  c.before(:each) do
+    # Use this to debug
+    Puppet::Util::Log.level = :debug
+    Puppet::Util::Log.newdestination(:console)
+  end
+
+end
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_debugging</div>
+          </section>
+
+
+          <section>
+          <h3>Debugging</h3>
+          <pre><code class="shell">$ rake spec
+/usr/bin/ruby -S rspec spec/classes/autofs_spec.rb --color
+Debug: importing '/root/moduledev/puppet-module-testing-clean/spec/fixtures/manifests/site.pp' in environment production
+Debug: importing '/root/moduledev/puppet-module-testing-clean/spec/fixtures/modules/autofs/manifests/init.pp' in environment production
+Debug: Automatically imported autofs from autofs into production
+Debug: importing '/root/moduledev/puppet-module-testing-clean/spec/fixtures/modules/autofs/manifests/params.pp' in environment production
+Debug: Automatically imported autofs::params from autofs/params into production
+...
+          </code></pre>
+          <div class="gitref">[rspec] git checkout rspec_debugging</div>
+          </section>
+
 
           <section>
           SORRY, OUT OF TIME :D
